@@ -42,6 +42,7 @@ const corsOptions = {
     "https://lifemirror.org",
     "https://diyere.vercel.app",
     "https://dashboard.diyere.com",
+    "https://diyereadmin.vercel.app",
     "https://admin.diyere.com",
   ], // specify your client's URL
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
