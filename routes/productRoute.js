@@ -54,7 +54,7 @@ function multerS3NoAcl(options) {
 const upload = multer({
   storage: multerS3NoAcl({
     s3,
-    bucket: "eduprosolution",
+    bucket: "edupros",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const fileKey = `ecommerce/${Date.now()}-${file.originalname}`;

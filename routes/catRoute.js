@@ -32,7 +32,7 @@ const s3 = new S3Client({
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: "eduprosolution",
+    bucket: "edupros",
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: (req, file, cb) => {
       const fileKey = `category/${Date.now()}-${file.originalname}`;

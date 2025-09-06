@@ -1,5 +1,5 @@
 import Product from "../models/productModel.js"; // Replace with your actual model
-
+import Category from "../models/bookCatModel.js"
 
 // export const createProduct = async (req, res) => {
 //   try {
@@ -136,10 +136,41 @@ export const createProduct = async (req, res) => {
   }
 };
 
+// export const getProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find().populate("category");
+//     res.json(products);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("category");
-    res.json(products);
+    const products = await Product.find().populate("category").lean();
+
+    const enrichedProducts = await Promise.all(
+      products.map(async (product) => {
+        let parentCategory = null;
+        let grandParentCategory = null;
+
+        if (product.category?.parent) {
+          parentCategory = await Category.findById(product.category.parent).lean();
+
+          if (parentCategory?.parent) {
+            grandParentCategory = await Category.findById(parentCategory.parent).lean();
+          }
+        }
+
+        return {
+          ...product,
+          parentCategory,
+          grandParentCategory,
+        };
+      })
+    );
+
+    res.json(enrichedProducts);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
