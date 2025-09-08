@@ -132,6 +132,7 @@ export const createProduct = async (req, res) => {
       grandParentCategory,
     });
   } catch (err) {
+    console.error("❌ Backend error creating product:", err); // <--- add this
     res.status(500).json({ message: err.message });
   }
 };
@@ -147,7 +148,10 @@ export const createProduct = async (req, res) => {
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find().populate("category").lean();
+  const products = await Product.find()
+      .populate("category") // keep category for hierarchy
+      .populate("brand", "name image") // ✅ add brand population
+      .lean();
 
     const enrichedProducts = await Promise.all(
       products.map(async (product) => {

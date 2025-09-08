@@ -70,9 +70,10 @@ const productSchema = new mongoose.Schema(
       default: 1,
     },
 
-    brand: {
-      type: String, // e.g., Nike, Adidas, Generic
-    },
+brand: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Brand",   // ✅ must match the model name
+  },
 
     features: {
       type: [String], // e.g., ["Waterproof", "Breathable", "Eco-friendly"]

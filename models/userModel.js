@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     },
     resetLink: {
       data: String,
-      default: "",
+    
     },
     googleId: { type: String },
     accessToken: String,
