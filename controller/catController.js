@@ -176,3 +176,16 @@ export const updateCategory = async (req, res) => {
     res.status(500).json({ error: "Failed to update category" });
   }
 };
+
+export const getCategoryById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findById(id).lean();
+    if (!category) return res.status(404).json({ error: "Category not found" });
+
+    res.status(200).json(category);
+  } catch (err) {
+    console.error("Failed to fetch category:", err);
+    res.status(500).json({ error: "Failed to fetch category" });
+  }
+};

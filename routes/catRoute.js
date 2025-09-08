@@ -15,7 +15,8 @@ import {
   createCategory,
   getAllCategories,
   updateCategory,
-  deleteCategory
+  deleteCategory,
+  getCategoryById
 } from "../controller/catController.js";
 import multerS3 from "multer-s3";
 import { S3Client } from "@aws-sdk/client-s3";
@@ -49,6 +50,7 @@ router.post("/category", upload.single("image"), createCategory);
 
 // GET /api/categories
 router.get("/categories", getAllCategories);
+router.get("/category/:id", getCategoryById);
 
 router.put("/category/:id", upload.single("image"), updateCategory);
 
