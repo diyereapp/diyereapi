@@ -137,3 +137,42 @@ export const getAllCategories = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch categories" });
   }
 };
+export const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    if (!deletedCategory) return res.status(404).json({ error: "Category not found" });
+
+    // Optional: Delete all subcategories and products if you want cascading deletion
+    await Category.deleteMany({ parent: id });
+    await Product.deleteMany({ category: id });
+
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (err) {
+    console.error("Category deletion error:", err);
+    res.status(500).json({ error: "Failed to delete category" });
+  }
+};
+
+
+// UPDATE CATEGORY
+export const updateCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, parent, icon } = req.body;
+    const updateData = { name, parent: parent || null, icon };
+
+    if (req.file) {
+      updateData.image = req.file.location || req.file.filename;
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, updateData, { new: true });
+    if (!updatedCategory) return res.status(404).json({ error: "Category not found" });
+
+    res.status(200).json(updatedCategory);
+  } catch (err) {
+    console.error("Category update error:", err);
+    res.status(500).json({ error: "Failed to update category" });
+  }
+};
