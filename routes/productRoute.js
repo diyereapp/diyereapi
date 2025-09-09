@@ -5,6 +5,7 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
+  getProductsByCategory
 } from "../controller/productController.js";
 import multer from "multer";
 import multerS3 from "multer-s3";
@@ -74,6 +75,9 @@ router.post(
 );
 router.get("/products", getProducts);
 router.get("/product/:id", getProductById);
+// Get products by category
+router.get("/products/category/:categoryId", getProductsByCategory);
+
 router.put("product/:id", updateProduct);
 router.delete("/product/:id", deleteProduct);
 

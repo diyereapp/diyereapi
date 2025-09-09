@@ -210,3 +210,42 @@ export const deleteProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+
+export const getProductsByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    // Fetch all products where product.category = this categoryId
+    const products = await Product.find({ category: categoryId })
+      .populate("category") // include category info
+      .populate("brand", "name image") // include brand if needed
+      .lean();
+
+    // Enrich with parent and grandparent category
+    const enrichedProducts = await Promise.all(
+      products.map(async (product) => {
+        let parentCategory = null;
+        let grandParentCategory = null;
+
+        if (product.category?.parent) {
+          parentCategory = await Category.findById(product.category.parent).lean();
+          if (parentCategory?.parent) {
+            grandParentCategory = await Category.findById(parentCategory.parent).lean();
+          }
+        }
+
+        return {
+          ...product,
+          parentCategory,
+          grandParentCategory,
+        };
+      })
+    );
+
+    res.json(enrichedProducts);
+  } catch (err) {
+    console.error("❌ Error fetching products by category:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
