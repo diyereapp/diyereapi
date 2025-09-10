@@ -80,6 +80,20 @@ export const createProduct = async (req, res) => {
       closureType,
       reviews = [],
     } = req.body;
+const parsedDecorationMethods = Array.isArray(decorationMethods)
+  ? decorationMethods.map((method) =>
+      typeof method === "string"
+        ? { name: method } // fallback if frontend sends only string
+        : method // already an object { name, note }
+    )
+  : decorationMethods
+  ? [
+      typeof decorationMethods === "string"
+        ? { name: decorationMethods }
+        : decorationMethods,
+    ]
+  : [];
+
 
     // Handle image uploads (AWS S3 or Multer-S3)
     const imageUrls = req.files?.images
@@ -99,7 +113,7 @@ export const createProduct = async (req, res) => {
       material,
       type,
       tag,
-      decorationMethods,
+       decorationMethods: parsedDecorationMethods,
       weight,
       minimumQuantity,
       brand,
@@ -136,21 +150,11 @@ export const createProduct = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-// export const getProducts = async (req, res) => {
-//   try {
-//     const products = await Product.find().populate("category");
-//     res.json(products);
-//   } catch (err) {
-//     res.status(500).json({ message: err.message });
-//   }
-// };
-
 export const getProducts = async (req, res) => {
   try {
   const products = await Product.find()
       .populate("category") // keep category for hierarchy
-      .populate("brand", "name image") // ✅ add brand population
+      .populate("brand", "name image description") // ✅ add brand population
       .lean();
 
     const enrichedProducts = await Promise.all(
@@ -179,16 +183,60 @@ export const getProducts = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+// export const getProducts = async (req, res) => {
+//   try {
+//     const products = await Product.find().populate("category");
+//     res.json(products);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+
+
+// export const getProductById = async (req, res) => {
+//   try {
+//     const product = await Product.findById(req.params.id).populate("category");
+//     if (!product) return res.status(404).json({ message: "Not found" });
+//     res.json(product);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+// export const getProductById = async (req, res) => {
+//   try {
+//     const product = await Product.findById(req.params.id)
+//       .populate({
+//         path: "category",
+//         populate: { path: "parent", populate: { path: "parent" } }, // populate parent and grandparent
+//       });
+
+//     if (!product) return res.status(404).json({ message: "Not found" });
+
+//     res.json(product);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 
 export const getProductById = async (req, res) => {
   try {
-    const product = await Product.findById(req.params.id).populate("category");
+    const product = await Product.findById(req.params.id)
+      .populate({
+        path: "category",
+        populate: { path: "parent", populate: { path: "parent" } },
+      })
+      .populate("brand", "name image description"); // ✅ include brand
+
     if (!product) return res.status(404).json({ message: "Not found" });
+
     res.json(product);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
+
 
 export const updateProduct = async (req, res) => {
   try {

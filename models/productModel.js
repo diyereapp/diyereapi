@@ -55,10 +55,18 @@ const productSchema = new mongoose.Schema(
       type: [String], // e.g., ["summer", "unisex", "sports"]
     },
 
-    decorationMethods: {
-      type: [String],
+decorationMethods: [
+  {
+    name: {
+      type: String,
       enum: ["Printed", "Embroidered", "Debossed"],
+      required: true,
     },
+    note: {
+      type: String, // e.g. "No Minimum"
+    },
+  },
+],
 
     weight: {
       type: String,

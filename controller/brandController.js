@@ -1,12 +1,12 @@
-// controllers/brandController.js
-import Brand from "../models/brandModel.js"
+import Brand from "../models/brandModel.js";
 
 export const createBrand = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name, description } = req.body; // 🆕 include description
 
     const brand = new Brand({
       name,
+      description,
       image: req.file ? req.file.location : null, // multer-s3 provides `location`
     });
 
