@@ -41,6 +41,8 @@ const corsOptions = {
     "https://www.diyere.com",
     "https://lifemirror.org",
     "https://dashboard.diyere.com",
+    "https://dbwearsadmin.vercel.app",
+    "https://dbwears.vercel.app",
     "https://diyereadmin.vercel.app",
     "https://admin.diyere.com",
   ],
