@@ -95,6 +95,13 @@ const parsedDecorationMethods = Array.isArray(decorationMethods)
   : [];
 
 
+  if (req.body.decorationMethods) {
+  req.body.decorationMethods = req.body.decorationMethods.filter(
+    (m) => m.name && m.name.trim() !== ""
+  );
+}
+
+
     // Handle image uploads (AWS S3 or Multer-S3)
     const imageUrls = req.files?.images
       ? req.files.images.map((file) => file.location)

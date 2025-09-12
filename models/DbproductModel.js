@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
 
     category: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "DbCategory",
       required: true,
     },
 
@@ -80,7 +80,7 @@ decorationMethods: [
 
 brand: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Brand",   // ✅ must match the model name
+    ref: "DbBrand",   // ✅ must match the model name
   },
 
     features: {
@@ -96,7 +96,7 @@ brand: {
       {
         user: {
           type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
+          ref: "DbUser",
         },
         rating: {
           type: Number,

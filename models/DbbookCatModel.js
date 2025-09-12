@@ -9,7 +9,7 @@ const categorySchema = new mongoose.Schema(
     },
     parent: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
+      ref: "DbCategory",
       default: null, // null means it's a top-level category
     },
     image: {
