@@ -245,18 +245,48 @@ export const getProductById = async (req, res) => {
 };
 
 
+// export const updateProduct = async (req, res) => {
+//   try {
+//     const updates = req.body;
+//     const updated = await Product.findByIdAndUpdate(req.params.id, updates, {
+//       new: true,
+//     });
+//     res.json(updated);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 export const updateProduct = async (req, res) => {
   try {
-    const updates = req.body;
-    const updated = await Product.findByIdAndUpdate(req.params.id, updates, {
+    const updates = { ...req.body };
+
+    let newImages = [];
+    if (req.files && req.files['images']) {
+      // Always ensure it's an array
+      const uploadedFiles = Array.isArray(req.files['images'])
+        ? req.files['images']
+        : [req.files['images']];
+
+      newImages = uploadedFiles.map((file) => file.location || file.path);
+    }
+
+    if (newImages.length > 0) {
+      updates.images = [
+        ...(req.body.existingImages ? JSON.parse(req.body.existingImages) : []),
+        ...newImages,
+      ];
+    }
+
+    const updated = await DbProduct.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
+
     res.json(updated);
   } catch (err) {
+    console.error("❌ Error updating product:", err);
     res.status(500).json({ message: err.message });
   }
 };
-
 export const deleteProduct = async (req, res) => {
   try {
     await Product.findByIdAndDelete(req.params.id);

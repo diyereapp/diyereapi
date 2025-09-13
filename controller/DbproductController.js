@@ -243,14 +243,71 @@ export const getProductById = async (req, res) => {
 };
 
 
+// export const updateProduct = async (req, res) => {
+//   try {
+//     const updates = req.body;
+//     const updated = await DbProduct.findByIdAndUpdate(req.params.id, updates, {
+//       new: true,
+//     });
+//     res.json(updated);
+//   } catch (err) {
+//     res.status(500).json({ message: err.message });
+//   }
+// };
+
+
+// export const updateProduct = async (req, res) => {
+//   try {
+//     const updates = { ...req.body };
+
+//     // If new images were uploaded
+//     if (req.files && req.files.images) {
+//       const newImages = req.files.images.map((file) => file.location);
+//       // Merge old + new
+//       updates.images = [
+//         ...(req.body.existingImages ? JSON.parse(req.body.existingImages) : []),
+//         ...newImages,
+//       ];
+//     }
+
+//     const updated = await DbProduct.findByIdAndUpdate(req.params.id, updates, {
+//       new: true,
+//     });
+
+//     res.json(updated);
+//   } catch (err) {
+//     console.error("❌ Error updating product:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 export const updateProduct = async (req, res) => {
   try {
-    const updates = req.body;
+    const updates = { ...req.body };
+
+    let newImages = [];
+    if (req.files && req.files['images']) {
+      // Always ensure it's an array
+      const uploadedFiles = Array.isArray(req.files['images'])
+        ? req.files['images']
+        : [req.files['images']];
+
+      newImages = uploadedFiles.map((file) => file.location || file.path);
+    }
+
+    if (newImages.length > 0) {
+      updates.images = [
+        ...(req.body.existingImages ? JSON.parse(req.body.existingImages) : []),
+        ...newImages,
+      ];
+    }
+
     const updated = await DbProduct.findByIdAndUpdate(req.params.id, updates, {
       new: true,
     });
+
     res.json(updated);
   } catch (err) {
+    console.error("❌ Error updating product:", err);
     res.status(500).json({ message: err.message });
   }
 };

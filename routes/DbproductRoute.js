@@ -78,7 +78,13 @@ router.get("/product/:id", getProductById);
 // Get products by category
 router.get("/products/category/:categoryId", getProductsByCategory);
 
-router.put("product/:id", updateProduct);
+// router.put("/product/:id", updateProduct);
+router.put(
+  "/product/:id",
+  upload.fields([{ name: "images", maxCount: 5 }]),
+  updateProduct
+);
+
 router.delete("/product/:id", deleteProduct);
 
 export default router;
