@@ -81,7 +81,7 @@ router.get("/products/category/:categoryId", getProductsByCategory);
 // router.put("/product/:id", updateProduct);
 router.put(
   "/product/:id",
-  upload.fields([{ name: "images", maxCount: 5 }]),
+  upload.fields([{ name: "images", maxCount: 10 }]),
   updateProduct
 );
 
