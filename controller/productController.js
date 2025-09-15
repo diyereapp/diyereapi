@@ -79,6 +79,11 @@ export const createProduct = async (req, res) => {
       features,
       closureType,
       reviews = [],
+       isBestSeller = false,   // 👈
+  isTrending = false,     // 👈
+  isFeatured = false, 
+
+
     } = req.body;
 const parsedDecorationMethods = Array.isArray(decorationMethods)
   ? decorationMethods.map((method) =>
@@ -129,6 +134,9 @@ const parsedDecorationMethods = Array.isArray(decorationMethods)
       images: imageUrls,
       reviews,
       productDate: Date.now(),
+       isBestSeller,
+  isTrending,
+  isFeatured,
     });
 
     // Fetch category, parent, and grandparent
@@ -331,6 +339,75 @@ export const getProductsByCategory = async (req, res) => {
     res.json(enrichedProducts);
   } catch (err) {
     console.error("❌ Error fetching products by category:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
+
+
+const enrichProducts = async (products) => {
+  return await Promise.all(
+    products.map(async (product) => {
+      let parentCategory = null;
+      let grandParentCategory = null;
+
+      if (product.category?.parent) {
+        parentCategory = await DbCategory.findById(product.category.parent).lean();
+
+        if (parentCategory?.parent) {
+          grandParentCategory = await DbCategory.findById(parentCategory.parent).lean();
+        }
+      }
+
+      return {
+        ...product,
+        parentCategory,
+        grandParentCategory,
+      };
+    })
+  );
+};
+
+// ✅ Best Sellers
+export const getBestSellers = async (req, res) => {
+  try {
+    const products = await Product.find({ isBestSeller: true })
+      .populate("category")
+      .populate("brand", "name image description")
+      .lean();
+
+    const enriched = await enrichProducts(products);
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✅ Trending
+export const getTrendingProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ isTrending: true })
+      .populate("category")
+      .populate("brand", "name image description")
+      .lean();
+
+    const enriched = await enrichProducts(products);
+    res.json(enriched);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// ✅ Featured
+export const getFeaturedProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ isFeatured: true })
+      .populate("category")
+      .populate("brand", "name image description")
+      .lean();
+
+    const enriched = await enrichProducts(products);
+    res.json(enriched);
+  } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };

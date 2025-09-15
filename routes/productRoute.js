@@ -5,7 +5,10 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProductsByCategory
+  getProductsByCategory,
+  getTrendingProducts,
+getBestSellers,
+getFeaturedProducts
 } from "../controller/productController.js";
 import multer from "multer";
 import multerS3 from "multer-s3";
@@ -75,6 +78,9 @@ router.post(
 );
 router.get("/products", getProducts);
 router.get("/product/:id", getProductById);
+router.get("/products/best-sellers", getBestSellers);
+router.get("/products/trending", getTrendingProducts);
+router.get("/products/featured", getFeaturedProducts);
 // Get products by category
 router.get("/products/category/:categoryId", getProductsByCategory);
 

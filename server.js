@@ -19,6 +19,7 @@ import cors from "cors";
 import MongoStore from "connect-mongo";
 import authRoute from "./routes/authRoute.js";
 import DbauthRoute from "./routes/DbauthRoute.js";
+import DbcartRoute from "./routes/DbcartRoute.js";
 
 dotenv.config();
 
@@ -79,6 +80,7 @@ app.use("/api", catRoute);
 app.use("/api/db", DbcatRoute);
 app.use("/api", brandRoute);
 app.use("/api/db", DbbrandRoute);
+app.use("/api/db", DbcartRoute);
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

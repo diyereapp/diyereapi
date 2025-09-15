@@ -110,6 +110,9 @@ brand: {
         },
       },
     ],
+    isBestSeller: { type: Boolean, default: false },
+    isTrending: { type: Boolean, default: false },
+    isFeatured: { type: Boolean, default: false },
 
     productDate: {
       type: Date,

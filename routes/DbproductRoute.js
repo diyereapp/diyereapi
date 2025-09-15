@@ -5,7 +5,10 @@ import {
   getProductById,
   updateProduct,
   deleteProduct,
-  getProductsByCategory
+  getProductsByCategory,
+getTrendingProducts,
+getBestSellers,
+getFeaturedProducts
 } from "../controller/DbproductController.js";
 import multer from "multer";
 import multerS3 from "multer-s3";
@@ -77,6 +80,9 @@ router.get("/products", getProducts);
 router.get("/product/:id", getProductById);
 // Get products by category
 router.get("/products/category/:categoryId", getProductsByCategory);
+router.get("/products/best-sellers", getBestSellers);
+router.get("/products/trending", getTrendingProducts);
+router.get("/products/featured", getFeaturedProducts);
 
 // router.put("/product/:id", updateProduct);
 router.put(
