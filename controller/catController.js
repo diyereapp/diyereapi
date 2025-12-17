@@ -157,18 +157,60 @@ export const deleteCategory = async (req, res) => {
 
 
 // UPDATE CATEGORY
+// export const updateCategory = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const { name, parent, icon } = req.body;
+//     const updateData = { name, parent: parent || null, icon };
+
+//     if (req.file) {
+//       updateData.image = req.file.location || req.file.filename;
+//     }
+
+//     const updatedCategory = await Category.findByIdAndUpdate(id, updateData, { new: true });
+//     if (!updatedCategory) return res.status(404).json({ error: "Category not found" });
+
+//     res.status(200).json(updatedCategory);
+//   } catch (err) {
+//     console.error("Category update error:", err);
+//     res.status(500).json({ error: "Failed to update category" });
+//   }
+// };
+// UPDATE CATEGORY
 export const updateCategory = async (req, res) => {
   try {
+    console.log("===== UPDATE CATEGORY REQUEST =====");
+    console.log("Params ID:", req.params.id);
+    console.log("Body received:", req.body);
+    console.log("File received:", req.file); // <-- IMPORTANT
+
     const { id } = req.params;
     const { name, parent, icon } = req.body;
-    const updateData = { name, parent: parent || null, icon };
 
-    if (req.file) {
-      updateData.image = req.file.location || req.file.filename;
+    const existing = await Category.findById(id);
+    if (!existing) {
+      return res.status(404).json({ error: "Category not found" });
     }
 
-    const updatedCategory = await Category.findByIdAndUpdate(id, updateData, { new: true });
-    if (!updatedCategory) return res.status(404).json({ error: "Category not found" });
+    const updateData = {
+      name,
+      parent: parent || existing.parent || null,
+      icon: icon || existing.icon,
+      image: existing.image,
+    };
+
+    if (req.file) {
+      console.log("AWS uploaded file URL:", req.file.location);
+      updateData.image = req.file.location;
+    } else {
+      console.log("❌ No file was uploaded.");
+    }
+
+    const updatedCategory = await Category.findByIdAndUpdate(id, updateData, {
+      new: true,
+    });
+
+    console.log("Updated category:", updatedCategory);
 
     res.status(200).json(updatedCategory);
   } catch (err) {
@@ -177,15 +219,33 @@ export const updateCategory = async (req, res) => {
   }
 };
 
+
+
+// export const getCategoryById = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const category = await Category.findById(id).lean();
+//     if (!category) return res.status(404).json({ error: "Category not found" });
+
+//     res.status(200).json(category);
+//   } catch (err) {
+//     console.error("Failed to fetch category:", err);
+//     res.status(500).json({ error: "Failed to fetch category" });
+//   }
+// };
+// Assuming you have a Category model
 export const getCategoryById = async (req, res) => {
   try {
-    const { id } = req.params;
-    const category = await Category.findById(id).lean();
-    if (!category) return res.status(404).json({ error: "Category not found" });
+    const category = await Category.findById(req.params.id)
+      .populate("children"); // ✅ This populates the children array
 
-    res.status(200).json(category);
+    if (!category) {
+      return res.status(404).json({ message: "Category not found" });
+    }
+
+    res.json(category);
   } catch (err) {
-    console.error("Failed to fetch category:", err);
-    res.status(500).json({ error: "Failed to fetch category" });
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
 };
